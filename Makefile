@@ -116,9 +116,9 @@ all: begin gccversion build sizeafter finished end
 MXPT: begin clean gccversion build_matrix sizeafter finished  copy_matrix end
 
 #PRODUCTION INFO ADDED
-MXPT_V120: begin clean gccversion build_matrix_v120 sizeafter finished copy_matrix end
+MXPT_V120: begin clean gccversion build_matrix_v120 sizeafter finished copy_matrix_v120 end
 
-MXPT_V150: begin clean gccversion build_matrix_v150 sizeafter finished  copy_matrix end
+MXPT_V150: begin clean gccversion build_matrix_v150 sizeafter finished  copy_matrix_v150 end
 
 # mMXPT: MATRIXFLAGS= "-DMATRIX_MODEL” #MXPT
 

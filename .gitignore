@@ -1,0 +1,7 @@
+
+build/
+*.elf
+build/maple_boot.bin
+build/main.o
+build/maple_boot.bin
+build/maple_boot.elf
