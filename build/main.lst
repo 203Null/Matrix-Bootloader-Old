@@ -1,0 +1,258 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"main.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.text.startup.main,"ax",%progbits
+  19              		.align	1
+  20              		.global	main
+  21              		.thumb
+  22              		.thumb_func
+  24              	main:
+  25              	.LFB0:
+  26              		.file 1 "main.c"
+   1:main.c        **** /* *****************************************************************************
+   2:main.c        **** * The MIT License
+   3:main.c        **** *
+   4:main.c        **** * Copyright (c) 2010 LeafLabs LLC.
+   5:main.c        **** *
+   6:main.c        **** * Permission is hereby granted, free of charge, to any person obtaining a copy
+   7:main.c        **** * of this software and associated documentation files (the "Software"), to deal
+   8:main.c        **** * in the Software without restriction, including without limitation the rights
+   9:main.c        **** * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  10:main.c        **** * copies of the Software, and to permit persons to whom the Software is
+  11:main.c        **** * furnished to do so, subject to the following conditions:
+  12:main.c        **** *
+  13:main.c        **** * The above copyright notice and this permission notice shall be included in
+  14:main.c        **** * all copies or substantial portions of the Software.
+  15:main.c        **** *
+  16:main.c        **** * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  17:main.c        **** * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  18:main.c        **** * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  19:main.c        **** * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  20:main.c        **** * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  21:main.c        **** * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  22:main.c        **** * THE SOFTWARE.
+  23:main.c        **** * ****************************************************************************/
+  24:main.c        **** 
+  25:main.c        **** /**
+  26:main.c        **** *  @file main.c
+  27:main.c        **** *
+  28:main.c        **** *  @brief main loop and calling any hardware init stuff. timing hacks for EEPROM
+  29:main.c        **** *  writes not to block usb interrupts. logic to handle 2 second timeout then
+  30:main.c        **** *  jump to user code.
+  31:main.c        **** *
+  32:main.c        **** */
+  33:main.c        **** 
+  34:main.c        **** #include "common.h"
+  35:main.c        **** #include "dfu.h"
+  36:main.c        **** #include "matrix.h"
+  37:main.c        **** 
+  38:main.c        **** extern volatile dfuUploadTypes_t userUploadType;
+  39:main.c        **** 
+  40:main.c        **** int main()
+  41:main.c        **** {
+  27              		.loc 1 41 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  32 0000 08B5     		push	{r3, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  42:main.c        ****   bool no_user_jump = FALSE;
+  43:main.c        ****   bool dont_wait = FALSE;
+  44:main.c        **** 
+  45:main.c        ****   systemReset(); // peripherals but not PC
+  36              		.loc 1 45 0
+  37 0002 FFF7FEFF 		bl	systemReset
+  38              	.LVL1:
+  46:main.c        ****   setupCLK();
+  39              		.loc 1 46 0
+  40 0006 FFF7FEFF 		bl	setupCLK
+  41              	.LVL2:
+  47:main.c        ****   setupLEDAndButton();
+  42              		.loc 1 47 0
+  43 000a FFF7FEFF 		bl	setupLEDAndButton
+  44              	.LVL3:
+  48:main.c        ****   setupUSB();
+  45              		.loc 1 48 0
+  46 000e FFF7FEFF 		bl	setupUSB
+  47              	.LVL4:
+  49:main.c        ****   setupFLASH();
+  48              		.loc 1 49 0
+  49 0012 FFF7FEFF 		bl	setupFLASH
+  50              	.LVL5:
+  50:main.c        **** 
+  51:main.c        ****   switch(checkAndClearBootloaderFlag())
+  51              		.loc 1 51 0
+  52 0016 FFF7FEFF 		bl	checkAndClearBootloaderFlag
+  53              	.LVL6:
+  54 001a 0128     		cmp	r0, #1
+  55 001c 08D0     		beq	.L10
+  56 001e 0228     		cmp	r0, #2
+  57 0020 0DD0     		beq	.L4
+  58              	.LVL7:
+  59              	.LBB2:
+  52:main.c        ****   {
+  53:main.c        ****     case 0x01:
+  54:main.c        ****     no_user_jump = TRUE;
+  55:main.c        **** 
+  56:main.c        ****     #ifdef FASTBOOT
+  57:main.c        ****     dont_wait = FALSE;
+  58:main.c        ****     #endif
+  59:main.c        **** 
+  60:main.c        ****     break;
+  61:main.c        **** 
+  62:main.c        ****     case 0x02:
+  63:main.c        ****     dont_wait = TRUE;
+  64:main.c        ****     break;
+  65:main.c        **** 
+  66:main.c        ****     default:
+  67:main.c        **** 
+  68:main.c        ****     #ifdef FASTBOOT
+  69:main.c        ****     dont_wait = TRUE;
+  70:main.c        ****     #endif
+  71:main.c        **** 
+  72:main.c        ****     if (!checkUserCode(USER_CODE_FLASH) || readButtonState())
+  60              		.loc 1 72 0
+  61 0022 0D48     		ldr	r0, .L22
+  62 0024 FFF7FEFF 		bl	checkUserCode
+  63              	.LVL8:
+  64 0028 10B1     		cbz	r0, .L10
+  65              		.loc 1 72 0 is_stmt 0 discriminator 1
+  66 002a FFF7FEFF 		bl	readButtonState
+  67              	.LVL9:
+  68 002e 30B1     		cbz	r0, .L4
+  69              	.LVL10:
+  70              	.L10:
+  71              	.LBE2:
+  72              	.LBB3:
+  73:main.c        ****     {
+  74:main.c        ****       no_user_jump = TRUE;
+  75:main.c        ****       #ifdef FASTBOOT
+  76:main.c        ****       dont_wait = FALSE;
+  77:main.c        ****       #endif
+  78:main.c        ****     }
+  79:main.c        ****     break;
+  80:main.c        ****   }
+  81:main.c        **** 
+  82:main.c        ****   if (!dont_wait)
+  83:main.c        ****   {
+  84:main.c        ****     int delay_count = 0;
+  85:main.c        **** 
+  86:main.c        ****     while ((delay_count++ < BOOTLOADER_WAIT) || no_user_jump)
+  87:main.c        ****     {
+  88:main.c        ****       if (dfuUploadStarted())
+  73              		.loc 1 88 0 is_stmt 1 discriminator 1
+  74 0030 FFF7FEFF 		bl	dfuUploadStarted
+  75              	.LVL11:
+  76 0034 0028     		cmp	r0, #0
+  77 0036 FBD0     		beq	.L10
+  89:main.c        ****       {
+  90:main.c        ****         dfuFinishUpload(); // systemHardReset from DFU once done
+  78              		.loc 1 90 0
+  79 0038 FFF7FEFF 		bl	dfuFinishUpload
+  80              	.LVL12:
+  81 003c F8E7     		b	.L10
+  82              	.L4:
+  83              	.LVL13:
+  84              	.LBE3:
+  91:main.c        ****       }
+  92:main.c        **** 
+  93:main.c        ****       // if(readButtonState())
+  94:main.c        ****       // {
+  95:main.c        ****       //   break;
+  96:main.c        ****       // }
+  97:main.c        ****     }
+  98:main.c        ****   }
+  99:main.c        **** 
+ 100:main.c        ****   if (checkUserCode(USER_CODE_FLASH))
+  85              		.loc 1 100 0
+  86 003e 0648     		ldr	r0, .L22
+  87 0040 FFF7FEFF 		bl	checkUserCode
+  88              	.LVL14:
+  89 0044 18B1     		cbz	r0, .L20
+ 101:main.c        ****   {
+ 102:main.c        ****     jumpToUser(USER_CODE_FLASH);
+  90              		.loc 1 102 0
+  91 0046 0448     		ldr	r0, .L22
+  92 0048 FFF7FEFF 		bl	jumpToUser
+  93              	.LVL15:
+  94 004c 01E0     		b	.L19
+  95              	.L20:
+ 103:main.c        ****   }
+ 104:main.c        ****   else
+ 105:main.c        ****   {
+ 106:main.c        ****     // Nothing to execute in either Flash or RAM
+ 107:main.c        **** 
+ 108:main.c        ****     systemHardReset();
+  96              		.loc 1 108 0
+  97 004e FFF7FEFF 		bl	systemHardReset
+  98              	.LVL16:
+  99              	.L19:
+ 109:main.c        ****   }
+ 110:main.c        ****   
+ 111:main.c        ****   return 0;// Added to please the compiler
+ 112:main.c        **** }
+ 100              		.loc 1 112 0
+ 101 0052 0020     		movs	r0, #0
+ 102 0054 08BD     		pop	{r3, pc}
+ 103              	.L23:
+ 104 0056 00BF     		.align	2
+ 105              	.L22:
+ 106 0058 00200008 		.word	134225920
+ 107              		.cfi_endproc
+ 108              	.LFE0:
+ 110              		.global	matrix_info
+ 111              		.comm	wTransferSize,4,4
+ 112              		.section	.matrix_info,"a",%progbits
+ 113              		.align	2
+ 116              	matrix_info:
+ 117 0000 78000000 		.word	120
+ 118 0004 5450584D 		.word	1297633364
+ 119 0008 96000000 		.word	150
+ 120 000c 00000000 		.word	0
+ 121              		.text
+ 122              	.Letext0:
+ 123              		.file 2 "matrix.h"
+ 124              		.file 3 "usb.h"
+ 125              		.file 4 "dfu.h"
+ 126              		.file 5 "hardware.h"
+ 127              		.file 6 "./stm32_lib/stm32f10x_type.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/cc88lB1J.s:19     .text.startup.main:0000000000000000 $t
+     /tmp/cc88lB1J.s:24     .text.startup.main:0000000000000000 main
+     /tmp/cc88lB1J.s:106    .text.startup.main:0000000000000058 $d
+     /tmp/cc88lB1J.s:116    .matrix_info:0000000000000000 matrix_info
+                            *COM*:0000000000000004 wTransferSize
+     /tmp/cc88lB1J.s:113    .matrix_info:0000000000000000 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+systemReset
+setupCLK
+setupLEDAndButton
+setupUSB
+setupFLASH
+checkAndClearBootloaderFlag
+checkUserCode
+readButtonState
+dfuUploadStarted
+dfuFinishUpload
+jumpToUser
+systemHardReset
