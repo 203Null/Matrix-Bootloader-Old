@@ -52,9 +52,14 @@ int main()
   {
     case 0x01:
     no_user_jump = TRUE;
+    #ifndef NOLED
+    strobePin(LED_BANK, LED_PIN, STARTUP_BLINKS, BLINK_FAST,LED_ON_STATE);
+    #endif
 
     #ifdef FASTBOOT
     dont_wait = FALSE;
+    #else
+    strobePin(LED_BANK, LED_PIN, STARTUP_BLINKS, BLINK_FAST,LED_ON_STATE);
     #endif
 
     break;
@@ -85,6 +90,12 @@ int main()
 
     while ((delay_count++ < BOOTLOADER_WAIT) || no_user_jump)
     {
+      #ifdef NOLED
+      strobePin(GPIOB, 2, STARTUP_BLINKS, BLINK_FAST, 1);
+      #else
+      strobePin(LED_BANK, LED_PIN, 1, BLINK_SLOW, LED_ON_STATE);
+      #endif
+
       if (dfuUploadStarted())
       {
         dfuFinishUpload(); // systemHardReset from DFU once done
@@ -104,9 +115,11 @@ int main()
   else
   {
     // Nothing to execute in either Flash or RAM
-
+    #ifndef NOLED
+    strobePin(LED_BANK, LED_PIN, 5, BLINK_FAST,LED_ON_STATE);
+    #endif
     systemHardReset();
   }
-  
+
   return 0;// Added to please the compiler
 }

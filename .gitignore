@@ -5,3 +5,17 @@ build/maple_boot.bin
 build/main.o
 build/maple_boot.bin
 build/maple_boot.elf
+full_build/Matrix_4-3_with_bootloader_V150.bin
+full_build/Matrix_4-3_with_bootloader_V120.bin
+full_build/Matrix_4-3-3_with_bootloader_V150.bin
+full_build/Matrix_4-3-3_with_bootloader_V120.bin
+full_build/Matrix_4-3-2_with_bootloader_V150.bin
+full_build/Matrix_4-3-2_with_bootloader_V120.bin
+full_build/Matrix_0.1.4b_touchbar_disabled_with_bootloader_V120.bin
+full_build/Matrix.ino.generic_stm32f103r_with_bootloader_V150.bin
+full_build/Matrix.ino.generic_stm32f103r_with_bootloader.bin
+full_build/Matrix V1.50 2-23-2019.bin
+bootloader_only_binaries/stlinkv2_m1.bin
+bootloader_only_binaries/matrix_v120.bin
+full_build/Matrix.ino.generic_stm32f103r_with_bootloader.bin
+full_build/Matrix V1.50 2-23-2019.bin

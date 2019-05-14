@@ -120,6 +120,8 @@ MXPT_V120: begin clean gccversion build_matrix_v120 sizeafter finished copy_matr
 
 MXPT_V150: begin clean gccversion build_matrix_v150 sizeafter finished  copy_matrix_v150 end
 
+STLINKV2M1: begin clean gccversion build_stlinkv2m1 sizeafter finished  copy_stlinkv2m1 end
+
 # mMXPT: MATRIXFLAGS= "-DMATRIX_MODEL” #MXPT
 
 matrix_info: MATRIXFLAGS = -DMATRIXINFO $(DEFINES)
@@ -162,6 +164,17 @@ copy_matrix_v150:
 	@echo "Copying to binaries folder"
 	@echo
 	cp $(TARGET).bin bootloader_only_binaries/matrix_v150.bin
+	@echo
+	
+build_stlinkv2m1: TARGETFLAGS= -DTARGET_STLINKV2M1 $(DEFINES)
+# Set the linker script
+build_stlinkv2m1: LDFLAGS +=-T$(ST_LIB)/c_only_md_high_density.ld
+build_stlinkv2m1: elf bin lss sym
+copy_stlinkv2m1:
+	@echo
+	@echo "Copying to binaries folder"
+	@echo
+	cp $(TARGET).bin bootloader_only_binaries/stlinkv2m1.bin
 	@echo
 
 bin: $(TARGET).bin

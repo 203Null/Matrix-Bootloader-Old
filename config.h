@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#define BOOTLOADER_VERSION 120
+#define BOOTLOADER_VERSION 130
 
 /* Speed controls for strobing the LED pin */
 #define BLINK_FAST 0x50000
@@ -69,7 +69,7 @@
   #define FASTBOOT
 
   #define BUTTON_BANK GPIOB
-  #define BUTTON_PIN 7
+  #define BUTTON_PIN 8
   #define BUTTON_PRESSED_STATE 1
 
   #define MATRIXINFO
@@ -90,6 +90,21 @@
   #define MATRIX_VERSION 150
   #define MATRIX_MODEL 0x4D585054
   #define MATRIX_BATCH 0
+
+ #elif defined TARGET_STLINKV2M1
+  #define MATRIX
+
+  #define LED_BANK            GPIOA
+  #define LED_PIN             9
+  #define LED_ON_STATE        1
+
+  #define BOOTLOADER_WAIT 6
+
+  #define MATRIXINFO
+  #define MATRIX_VERSION 1
+  #define MATRIX_MODEL 0x4D584C53
+  #define MATRIX_BATCH 0
+
 #else
     #error "No config for this target"
 #endif
@@ -102,6 +117,7 @@
 #endif
 
 #define STARTUP_BLINKS 5
+
 #ifndef BOOTLOADER_WAIT
 #ifdef BUTTON_BANK
     #define BOOTLOADER_WAIT 6
