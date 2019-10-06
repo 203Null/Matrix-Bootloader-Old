@@ -91,19 +91,44 @@
   #define MATRIX_MODEL 0x4D585054
   #define MATRIX_BATCH 0
 
- #elif defined TARGET_STLINKV2M1
+#elif defined TARGET_MXPT210
   #define MATRIX
+  #define NOLED
+  #define FASTBOOT
 
-  #define LED_BANK            GPIOA
-  #define LED_PIN             9
-  #define LED_ON_STATE        1
+  #define BUTTON_BANK GPIOA
+  #define BUTTON_PIN 0
+  #define BUTTON_PRESSED_STATE 0
+
+  #define MATRIXINFO
+  #define MATRIX_VERSION 210
+  #define MATRIX_MODEL 0x4D585054
+  #define MATRIX_BATCH 0
+
+#elif defined TARGET_MXPT210_SAFE
+  #define MATRIX
+  #define NOLED
 
   #define BOOTLOADER_WAIT 6
 
   #define MATRIXINFO
-  #define MATRIX_VERSION 1
-  #define MATRIX_MODEL 0x4D584C53
+  #define MATRIX_VERSION 210
+  #define MATRIX_MODEL 0x4D585054
   #define MATRIX_BATCH 0
+
+#elif defined TARGET_STLINKV2M1
+#define MATRIX
+
+#define LED_BANK            GPIOA
+#define LED_PIN             9
+#define LED_ON_STATE        1
+
+#define BOOTLOADER_WAIT 6
+
+#define MATRIXINFO
+#define MATRIX_VERSION 1
+#define MATRIX_MODEL 0x4D584C53
+#define MATRIX_BATCH 0
 
 #else
     #error "No config for this target"

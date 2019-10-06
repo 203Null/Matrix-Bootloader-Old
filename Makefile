@@ -120,6 +120,10 @@ MXPT_V120: begin clean gccversion build_matrix_v120 sizeafter finished copy_matr
 
 MXPT_V150: begin clean gccversion build_matrix_v150 sizeafter finished  copy_matrix_v150 end
 
+MXPT_V210: begin clean gccversion build_matrix_v210 sizeafter finished  copy_matrix_v210 end
+
+MXPT_V210_SAFE: begin clean gccversion build_matrix_v210_safe sizeafter finished copy_matrix_v210_safe end
+
 STLINKV2M1: begin clean gccversion build_stlinkv2m1 sizeafter finished  copy_stlinkv2m1 end
 
 # mMXPT: MATRIXFLAGS= "-DMATRIX_MODEL” #MXPT
@@ -165,7 +169,30 @@ copy_matrix_v150:
 	@echo
 	cp $(TARGET).bin bootloader_only_binaries/matrix_v150.bin
 	@echo
-	
+
+build_matrix_v210: TARGETFLAGS= -DTARGET_MXPT210 $(DEFINES)
+# Set the linker script
+build_matrix_v210: LDFLAGS +=-T$(ST_LIB)/c_only_md_high_density.ld
+build_matrix_v210: elf bin lss sym
+copy_matrix_v210:
+	@echo
+	@echo "Copying to binaries folder"
+	@echo
+	cp $(TARGET).bin bootloader_only_binaries/matrix_v210.bin
+	@echo
+
+build_matrix_v210_safe: TARGETFLAGS= -DTARGET_MXPT210_SAFE $(DEFINES)
+# Set the linker script
+build_matrix_v210_safe: LDFLAGS +=-T$(ST_LIB)/c_only_md_high_density.ld
+build_matrix_v210_safe: elf bin lss sym
+copy_matrix_v210_safe:
+	@echo
+	@echo "Copying to binaries folder"
+	@echo
+	cp $(TARGET).bin bootloader_only_binaries/matrix_v210_safe.bin
+	@echo
+
+
 build_stlinkv2m1: TARGETFLAGS= -DTARGET_STLINKV2M1 $(DEFINES)
 # Set the linker script
 build_stlinkv2m1: LDFLAGS +=-T$(ST_LIB)/c_only_md_high_density.ld

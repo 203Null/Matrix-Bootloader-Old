@@ -59,7 +59,9 @@ int main()
     #ifdef FASTBOOT
     dont_wait = FALSE;
     #else
+    #ifndef NOLED
     strobePin(LED_BANK, LED_PIN, STARTUP_BLINKS, BLINK_FAST,LED_ON_STATE);
+    #endif
     #endif
 
     break;
